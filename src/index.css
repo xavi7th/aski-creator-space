@@ -17,31 +17,31 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 13%;
 
-    /* Enski Brand Colors */
-    --primary: 17 82% 50%; /* #dd4c23 orange */
+    /* Softer Enski Brand Colors */
+    --primary: 17 60% 45%; /* Softer orange */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 17 82% 95%;
+    --primary-light: 17 60% 96%;
 
-    --secondary: 204 80% 37%; /* #255197 blue */
+    --secondary: 204 45% 50%; /* Softer blue */
     --secondary-foreground: 0 0% 100%;
-    --secondary-light: 204 80% 95%;
+    --secondary-light: 204 45% 96%;
 
-    --accent: 288 85% 56%; /* #b22af3 purple */
+    --accent: 288 50% 65%; /* Softer purple */
     --accent-foreground: 0 0% 100%;
-    --accent-light: 288 85% 95%;
+    --accent-light: 288 50% 96%;
 
     --muted: 220 13% 95%;
     --muted-foreground: 220 13% 45%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--primary)));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+    /* Softer Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary) / 0.8), hsl(var(--accent) / 0.8));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary) / 0.8), hsl(var(--primary) / 0.8));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted) / 0.5));
 
-    /* Shadows */
-    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.1);
-    --shadow-medium: 0 8px 30px hsl(var(--primary) / 0.15);
-    --shadow-strong: 0 20px 60px hsl(var(--primary) / 0.2);
+    /* Softer Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.08);
+    --shadow-medium: 0 8px 30px hsl(var(--primary) / 0.12);
+    --shadow-strong: 0 20px 60px hsl(var(--primary) / 0.15);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
