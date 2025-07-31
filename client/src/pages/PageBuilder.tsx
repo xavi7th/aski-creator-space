@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import { 
   Plus, 
   Eye, 
@@ -26,492 +30,791 @@ import {
   Settings,
   Copy,
   Trash2,
-  Grid,
-  Table,
+  Grid3X3,
   List,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Edit3,
+  Target,
+  Trophy,
+  Gift,
+  Clock,
+  Check,
+  X,
+  GripVertical
 } from "lucide-react";
 
 interface Block {
   id: string;
-  type: 'hero' | 'text' | 'image' | 'video' | 'pricing' | 'testimonial' | 'cta' | 'grid' | 'table' | 'list';
+  type: 'hero' | 'text' | 'features' | 'testimonials' | 'cta' | 'form' | 'image' | 'video' | 'pricing' | 'bonuses' | 'timeline' | 'footer';
   content: any;
+  settings: {
+    backgroundColor: string;
+    textColor: string;
+    padding: string;
+    alignment: 'left' | 'center' | 'right';
+  };
 }
+
+// Default template based on the attached image
+const defaultTemplate: Block[] = [
+  {
+    id: 'hero-1',
+    type: 'hero',
+    content: {
+      title: 'BOOKED WITHOUT BOUNDARIES',
+      subtitle: 'Master the art of client acquisition and join top coaches who have transformed their business. Take the leap into confidence.',
+      ctaText: 'Claim Your Spot Now',
+      formTitle: 'Reserve Your Spot Now',
+      formFields: [
+        { label: 'Full Name', placeholder: 'Enter your full name', required: true },
+        { label: 'Best Email', placeholder: 'Enter your email', required: true },
+        { label: 'Phone Number', placeholder: 'Enter your phone', required: true }
+      ]
+    },
+    settings: {
+      backgroundColor: 'bg-slate-800',
+      textColor: 'text-white',
+      padding: 'py-20',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'text-1',
+    type: 'text',
+    content: {
+      heading: 'You started off with one dream in mind:',
+      subheading: 'To create something meaningful that connects with people...',
+      text: 'You told yourself once this takes off - I hope this becomes something I can be proud of.\n\nYou jumped in with passion, knowing deep down that success in coaching requires skills you can develop.\n\nYou want to help people transform their lives, but you realized that building a successful coaching business requires more than just good intentions.\n\nYou looked around and saw other coaches thriving, but felt uncertain about how to replicate their success.\n\nYou focused on your craft but struggled with the business side - marketing, sales, and client acquisition.\n\nYou sometimes feel isolated and unsure about the direction to take your coaching practice.'
+    },
+    settings: {
+      backgroundColor: 'bg-white',
+      textColor: 'text-gray-800',
+      padding: 'py-16',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'features-1',
+    type: 'features',
+    content: {
+      heading: 'We are here to support you on every stage of the journey',
+      features: [
+        {
+          icon: 'target',
+          title: 'The 30 Day Challenge',
+          description: 'Daily tools and resources to build your ideal client attraction system with accountability.'
+        },
+        {
+          icon: 'users',
+          title: 'Partnership Program', 
+          description: 'Join our exclusive directory where we connect and support motivated coaches.'
+        },
+        {
+          icon: 'trophy',
+          title: 'Proven System',
+          description: 'Run your coaching business with confidence using our tested frameworks.'
+        }
+      ]
+    },
+    settings: {
+      backgroundColor: 'bg-gray-50',
+      textColor: 'text-gray-800',
+      padding: 'py-16',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'testimonials-1',
+    type: 'testimonials',
+    content: {
+      heading: 'In this conference, you\'ll learn:',
+      bulletPoints: [
+        'How to consistently attract your ideal clients without burning out',
+        'The psychology behind client decision-making and how to ethically influence',
+        'Building authentic relationships that naturally convert to sales',
+        'Systems for sustainable business growth while maintaining work-life balance'
+      ]
+    },
+    settings: {
+      backgroundColor: 'bg-white',
+      textColor: 'text-gray-800',
+      padding: 'py-16',
+      alignment: 'left'
+    }
+  },
+  {
+    id: 'cta-1',
+    type: 'cta',
+    content: {
+      heading: 'Join Expert Instructors',
+      text: 'Get ready to be in close company with our industry pros and see the transformational journey of our community members as they turn their stories into successful businesses.',
+      ctaText: 'Register Now',
+      hasImage: true,
+      imageDescription: 'Expert instructor presenting to engaged audience'
+    },
+    settings: {
+      backgroundColor: 'bg-slate-800',
+      textColor: 'text-white',
+      padding: 'py-20',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'timeline-1',
+    type: 'timeline',
+    content: {
+      heading: 'Imagine what your life could be like in the next 100 days',
+      timelineItems: [
+        { phase: 'Days 1-30', title: 'Foundation Building', description: 'Master the fundamentals of client attraction' },
+        { phase: 'Days 31-60', title: 'System Implementation', description: 'Put proven frameworks into action' },
+        { phase: 'Days 61-100', title: 'Scale & Optimize', description: 'Grow your business sustainably' }
+      ]
+    },
+    settings: {
+      backgroundColor: 'bg-gray-50',
+      textColor: 'text-gray-800',
+      padding: 'py-16',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'bonuses-1',
+    type: 'bonuses',
+    content: {
+      heading: '🎁 AMAZING GIFTS FOR YOU',
+      subtitle: 'When you join today, you get exclusive bonuses worth more than the program investment',
+      bonuses: [
+        { title: 'Exclusive Client/Coach Discovery Access', value: '$497', description: 'Private community access' },
+        { title: 'Advanced Marketing Templates', value: '$297', description: 'Ready-to-use marketing materials' },
+        { title: '1-on-1 Strategy Session', value: '$500', description: 'Personal consultation call' }
+      ]
+    },
+    settings: {
+      backgroundColor: 'bg-orange-50',
+      textColor: 'text-gray-800',
+      padding: 'py-16',
+      alignment: 'center'
+    }
+  },
+  {
+    id: 'footer-1',
+    type: 'footer',
+    content: {
+      heading: '2025 is not over yet! Let\'s make it count.',
+      text: 'Join us and transform your coaching business today.',
+      ctaText: 'Secure Your Spot Now'
+    },
+    settings: {
+      backgroundColor: 'bg-slate-800',
+      textColor: 'text-white',
+      padding: 'py-16',
+      alignment: 'center'
+    }
+  }
+];
 
 export default function PageBuilder() {
   const [activeTab, setActiveTab] = useState("builder");
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [blocks, setBlocks] = useState<Block[]>([
-    {
-      id: '1',
-      type: 'hero',
-      content: {
-        title: 'BOOKED WITHOUT BOUNDARIES',
-        subtitle: 'Master the art of client acquisition - join top coaches who have transformed their business. Take the leap into confidence.',
-        image: 'bg-gradient-primary',
-        cta: 'Register Now',
-        hasForm: true,
-        formFields: ['Full Name', 'Best Email', 'Phone Number']
-      }
-    },
-    {
-      id: '2', 
-      type: 'text',
-      content: {
-        heading: 'You started off with one dream in mind:',
-        text: 'To create something from your soul work as a coach that connects Heart to Heart.\n\nYou told yourself once this takes off - I hope that it is a skill you can identify with in this field.\n\nYou jumped yourself in the stage - then fact is a skill you can identify with in this stage.\n\nYou feel yourself it bit you can practice and gain practice and be experience and experience that fits yourself to be yourself to take yourself to experience that fits.\n\nYou looked around a bit practice and bit and some experience or mindfulness so you ended up not going yourself to business confidence.\n\nYou focused a long as yourself which helped and confident.\n\nYou feel isolated and a bit part of a different direction you will not be able to take as much practice as you want that you are already behind.',
-        centered: true
-      }
-    },
-    {
-      id: '3',
-      type: 'text', 
-      content: {
-        heading: 'We are here to support you on every stage of the journey',
-        text: 'Our community includes thousands of coaches, consultants, and heart-centered entrepreneurs who have built six and seven figure businesses with authentic connection.\\n\\nThe 30 Day Challenge\\n\\nWe will provide you with the daily tools and resources you need to build your ideal client attraction system - and accountability to stick with it for 30 days.\\n\\nPartnership Program\\n\\nJoin our exclusive directory where we connect and support motivated coaches. Starting your online presence and build social authority.\\n\\nNurture Sales\\n\\nRun your online business like it is any real. Starting your social presence and build social authority.',
-        features: [
-          'Daily tools and resources',
-          'Accountability system', 
-          'Exclusive directory access',
-          'Community support'
-        ]
-      }
-    },
-    {
-      id: '4',
-      type: 'text',
-      content: {
-        heading: 'In this conference, you will learn:',
-        text: '',
-        bulletPoints: [
-          'How to consistently attract ideal clients',
-          'The psychology behind client decisions', 
-          'Building authentic relationships that convert',
-          'Systems for sustainable business growth'
-        ]
-      }
-    },
-    {
-      id: '5',
-      type: 'text',
-      content: {
-        heading: 'Join Expert Instructors',
-        text: 'Get ready to be in close company with our industry pros and see the transformational journey of our community members as they turn their stories into million-dollar businesses.',
-        hasImage: true,
-        imageUrl: '/lovable-uploads/0795ffc0-38d0-4894-a840-0ee84615459c.png'
-      }
-    },
-    {
-      id: '6', 
-      type: 'text',
-      content: {
-        heading: 'Imagine what your life could be like in the next 100 days',
-        text: 'Picture yourself confident in your abilities, with a clear path forward and the support you need to succeed.',
-        bulletPoints: [
-          'Consistent client bookings',
-          'Clear business strategy',
-          'Supportive community'
-        ]
-      }
-    },
-    {
-      id: '7',
-      type: 'text',
-      content: {
-        heading: '🎁 AMAZING GIFTS FOR YOU',
-        text: 'When you join today, you will get exclusive bonuses that alone are worth more than the full program investment.',
-        hasHighlight: true
-      }
-    },
-    {
-      id: '8',
-      type: 'cta',
-      content: {
-        heading: '2025 is not over yet! Let us make it count.',
-        text: 'Join the transformation today',
-        button: 'Start Your Journey'
-      }
+  const [blocks, setBlocks] = useState<Block[]>(defaultTemplate);
+  const [pageSettings, setPageSettings] = useState({
+    title: 'Booked Without Boundaries - Landing Page',
+    description: 'Transform your coaching business with proven strategies'
+  });
+
+  // Load saved data
+  useEffect(() => {
+    const savedData = localStorage.getItem('pageBuilderData');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setBlocks(parsed.blocks || defaultTemplate);
+      setPageSettings(parsed.pageSettings || pageSettings);
     }
-  ]);
+  }, []);
+
+  // Save data
+  useEffect(() => {
+    localStorage.setItem('pageBuilderData', JSON.stringify({ blocks, pageSettings }));
+  }, [blocks, pageSettings]);
 
   const blockTypes = [
-    { type: 'hero', icon: Layout, label: 'Hero Section' },
-    { type: 'text', icon: Type, label: 'Text Block' },
-    { type: 'image', icon: Image, label: 'Image' },
-    { type: 'video', icon: Video, label: 'Video' },
-    { type: 'pricing', icon: CreditCard, label: 'Pricing' },
-    { type: 'testimonial', icon: Quote, label: 'Testimonial' },
-    { type: 'cta', icon: Star, label: 'Call to Action' },
-    { type: 'grid', icon: Grid, label: 'Grid Layout' },
-    { type: 'table', icon: Table, label: 'Table' },
-    { type: 'list', icon: List, label: 'List' }
+    { type: 'hero', label: 'Hero Section', icon: Layout, description: 'Main header with form' },
+    { type: 'text', label: 'Text Block', icon: Type, description: 'Heading and paragraphs' },
+    { type: 'features', label: 'Features', icon: Grid3X3, description: 'Feature grid with icons' },
+    { type: 'testimonials', label: 'Testimonials', icon: Quote, description: 'Social proof section' },
+    { type: 'cta', label: 'Call to Action', icon: Target, description: 'Action-focused section' },
+    { type: 'form', label: 'Form', icon: Edit3, description: 'Standalone form' },
+    { type: 'image', label: 'Image', icon: Image, description: 'Image with caption' },
+    { type: 'video', label: 'Video', icon: Video, description: 'Video embed' },
+    { type: 'pricing', label: 'Pricing', icon: CreditCard, description: 'Pricing tables' },
+    { type: 'bonuses', label: 'Bonuses', icon: Gift, description: 'Bonus offers section' },
+    { type: 'timeline', label: 'Timeline', icon: Clock, description: 'Process timeline' },
+    { type: 'footer', label: 'Footer', icon: Layout, description: 'Page footer' }
   ];
 
-  const addBlock = (type: string) => {
+  const addBlock = (type: Block['type']) => {
     const newBlock: Block = {
-      id: Date.now().toString(),
-      type: type as any,
-      content: getDefaultContent(type)
+      id: `${type}-${Date.now()}`,
+      type,
+      content: getDefaultContent(type),
+      settings: {
+        backgroundColor: 'bg-white',
+        textColor: 'text-gray-800',
+        padding: 'py-16',
+        alignment: 'center'
+      }
     };
     setBlocks([...blocks, newBlock]);
   };
 
-  const moveBlock = (blockId: string, direction: 'up' | 'down') => {
-    const blockIndex = blocks.findIndex(b => b.id === blockId);
-    if (blockIndex === -1) return;
-    
-    const newBlocks = [...blocks];
-    if (direction === 'up' && blockIndex > 0) {
-      [newBlocks[blockIndex], newBlocks[blockIndex - 1]] = [newBlocks[blockIndex - 1], newBlocks[blockIndex]];
-    } else if (direction === 'down' && blockIndex < blocks.length - 1) {
-      [newBlocks[blockIndex], newBlocks[blockIndex + 1]] = [newBlocks[blockIndex + 1], newBlocks[blockIndex]];
+  const getDefaultContent = (type: Block['type']) => {
+    switch (type) {
+      case 'hero':
+        return {
+          title: 'Your Compelling Headline',
+          subtitle: 'A powerful subtitle that converts',
+          ctaText: 'Get Started Now',
+          formTitle: 'Sign Up Today',
+          formFields: [
+            { label: 'Name', placeholder: 'Your name', required: true },
+            { label: 'Email', placeholder: 'Your email', required: true }
+          ]
+        };
+      case 'text':
+        return {
+          heading: 'Section Heading',
+          subheading: 'Optional subheading',
+          text: 'Your content goes here. You can write multiple paragraphs to convey your message effectively.'
+        };
+      case 'features':
+        return {
+          heading: 'Our Amazing Features',
+          features: [
+            { icon: 'check', title: 'Feature One', description: 'Description of this feature' },
+            { icon: 'star', title: 'Feature Two', description: 'Description of this feature' },
+            { icon: 'target', title: 'Feature Three', description: 'Description of this feature' }
+          ]
+        };
+      case 'testimonials':
+        return {
+          heading: 'What People Say',
+          bulletPoints: [
+            'First testimonial or benefit point',
+            'Second testimonial or benefit point',
+            'Third testimonial or benefit point'
+          ]
+        };
+      case 'cta':
+        return {
+          heading: 'Ready to Get Started?',
+          text: 'Join thousands of satisfied customers today.',
+          ctaText: 'Get Started Now',
+          hasImage: false
+        };
+      case 'bonuses':
+        return {
+          heading: '🎁 Exclusive Bonuses',
+          subtitle: 'Limited time offer',
+          bonuses: [
+            { title: 'Bonus One', value: '$100', description: 'Description of bonus' },
+            { title: 'Bonus Two', value: '$200', description: 'Description of bonus' }
+          ]
+        };
+      case 'timeline':
+        return {
+          heading: 'Your Journey',
+          timelineItems: [
+            { phase: 'Step 1', title: 'Getting Started', description: 'Begin your journey' },
+            { phase: 'Step 2', title: 'Making Progress', description: 'See results' },
+            { phase: 'Step 3', title: 'Success', description: 'Achieve your goals' }
+          ]
+        };
+      case 'footer':
+        return {
+          heading: 'Ready to Transform?',
+          text: 'Join us today and start your journey.',
+          ctaText: 'Get Started'
+        };
+      default:
+        return {};
     }
-    setBlocks(newBlocks);
   };
 
-  const duplicateBlock = (blockId: string) => {
-    const blockToDuplicate = blocks.find(b => b.id === blockId);
-    if (!blockToDuplicate) return;
-    
-    const newBlock: Block = {
-      ...blockToDuplicate,
-      id: Date.now().toString()
-    };
-    
-    const blockIndex = blocks.findIndex(b => b.id === blockId);
-    const newBlocks = [...blocks];
-    newBlocks.splice(blockIndex + 1, 0, newBlock);
-    setBlocks(newBlocks);
+  const updateBlock = (blockId: string, newContent: any) => {
+    setBlocks(blocks.map(block => 
+      block.id === blockId ? { ...block, content: { ...block.content, ...newContent } } : block
+    ));
+  };
+
+  const updateBlockSettings = (blockId: string, newSettings: Partial<Block['settings']>) => {
+    setBlocks(blocks.map(block => 
+      block.id === blockId ? { ...block, settings: { ...block.settings, ...newSettings } } : block
+    ));
   };
 
   const deleteBlock = (blockId: string) => {
-    setBlocks(blocks.filter(b => b.id !== blockId));
+    setBlocks(blocks.filter(block => block.id !== blockId));
     if (selectedBlock === blockId) {
       setSelectedBlock(null);
     }
   };
 
-  const getDefaultContent = (type: string) => {
-    const defaults: { [key: string]: any } = {
-      hero: {
-        title: 'Your Amazing Course Title',
-        subtitle: 'Compelling subtitle that converts',
-        image: 'bg-gradient-secondary',
-        cta: 'Enroll Now'
-      },
-      text: {
-        heading: 'Section Heading',
-        text: 'Your content goes here...'
-      },
-      image: {
-        url: '',
-        alt: 'Image description',
-        caption: ''
-      },
-      video: {
-        url: '',
-        title: 'Video Title',
-        description: 'Video description'
-      },
-      pricing: {
-        title: 'Course Pricing',
-        price: '$197',
-        features: ['Feature 1', 'Feature 2', 'Feature 3']
-      },
-      testimonial: {
-        quote: 'This course changed my business!',
-        author: 'Happy Student',
-        role: 'Entrepreneur'
-      },
-      cta: {
-        heading: 'Ready to Get Started?',
-        text: 'Join thousands of successful students',
-        button: 'Enroll Today'
-      },
-      grid: {
-        title: 'Features Grid',
-        columns: 3,
-        items: [
-          { title: 'Feature 1', description: 'Description of feature 1', icon: '🚀' },
-          { title: 'Feature 2', description: 'Description of feature 2', icon: '💡' },
-          { title: 'Feature 3', description: 'Description of feature 3', icon: '⭐' }
-        ]
-      },
-      table: {
-        title: 'Comparison Table',
-        headers: ['Feature', 'Basic', 'Premium'],
-        rows: [
-          ['Support', 'Email', '24/7 Chat'],
-          ['Users', '1 User', 'Unlimited'],
-          ['Storage', '1GB', '100GB']
-        ]
-      },
-      list: {
-        title: 'What You\'ll Get',
-        items: [
-          'Comprehensive video tutorials',
-          'Downloadable resources',
-          'Community access',
-          'Certificate of completion'
-        ],
-        style: 'numbered'
-      }
-    };
-    return defaults[type] || {};
+  const moveBlock = (blockId: string, direction: 'up' | 'down') => {
+    const index = blocks.findIndex(block => block.id === blockId);
+    if (
+      (direction === 'up' && index > 0) ||
+      (direction === 'down' && index < blocks.length - 1)
+    ) {
+      const newBlocks = [...blocks];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
+      setBlocks(newBlocks);
+    }
+  };
+
+  const duplicateBlock = (blockId: string) => {
+    const block = blocks.find(b => b.id === blockId);
+    if (block) {
+      const newBlock = { ...block, id: `${block.type}-${Date.now()}` };
+      const index = blocks.findIndex(b => b.id === blockId);
+      setBlocks([...blocks.slice(0, index + 1), newBlock, ...blocks.slice(index + 1)]);
+    }
+  };
+
+  const getViewModeClass = () => {
+    switch (viewMode) {
+      case 'mobile': return 'max-w-sm mx-auto';
+      case 'tablet': return 'max-w-2xl mx-auto';
+      default: return 'w-full';
+    }
+  };
+
+  const renderIcon = (iconName: string, className = "w-5 h-5") => {
+    switch (iconName) {
+      case 'check': return <Check className={className} />;
+      case 'star': return <Star className={className} />;
+      case 'target': return <Target className={className} />;
+      case 'users': return <Users className={className} />;
+      case 'trophy': return <Trophy className={className} />;
+      default: return <Check className={className} />;
+    }
   };
 
   const renderBlock = (block: Block) => {
-    const isSelected = selectedBlock === block.id;
-    
+    const { settings } = block;
+    const alignmentClass = {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right'
+    };
+
+    const baseClasses = `${settings.backgroundColor} ${settings.textColor} ${settings.padding} ${alignmentClass[settings.alignment]}`;
+
     switch (block.type) {
       case 'hero':
         return (
-          <div 
-            className={`relative ${block.content.image} h-96 rounded-lg overflow-hidden cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <div className="text-center text-white">
-                <h1 className="text-4xl font-bold mb-4">{block.content.title}</h1>
-                <p className="text-xl mb-8">{block.content.subtitle}</p>
-                <Button variant="default" size="lg">
-                  {block.content.cta}
-                </Button>
+          <section className={`${baseClasses} relative`} key={block.id}>
+            <div className="container mx-auto px-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                    {block.content.title}
+                  </h1>
+                  <p className="text-xl mb-8 opacity-90">
+                    {block.content.subtitle}
+                  </p>
+                  <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100">
+                    {block.content.ctaText}
+                  </Button>
+                </div>
+                <div className="bg-white p-8 rounded-lg">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    {block.content.formTitle}
+                  </h3>
+                  <form className="space-y-4">
+                    {block.content.formFields?.map((field: any, index: number) => (
+                      <Input
+                        key={index}
+                        placeholder={field.placeholder}
+                        className="w-full"
+                      />
+                    ))}
+                    <Button className="w-full bg-slate-800 hover:bg-slate-700">
+                      {block.content.ctaText}
+                    </Button>
+                  </form>
+                </div>
               </div>
             </div>
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
+          </section>
         );
-      
+
       case 'text':
         return (
-          <div 
-            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <h2 className="text-2xl font-bold mb-4">{block.content.heading}</h2>
-            <p className="text-muted-foreground leading-relaxed">{block.content.text}</p>
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4 max-w-4xl">
+              {block.content.heading && (
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  {block.content.heading}
+                </h2>
+              )}
+              {block.content.subheading && (
+                <h3 className="text-xl md:text-2xl mb-8 opacity-80">
+                  {block.content.subheading}
+                </h3>
+              )}
+              {block.content.text && (
+                <div className="text-lg leading-relaxed whitespace-pre-line">
+                  {block.content.text}
+                </div>
+              )}
+            </div>
+          </section>
         );
-      
-      case 'pricing':
+
+      case 'features':
         return (
-          <div 
-            className={`p-6 bg-white rounded-lg border-2 border-primary/20 cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <div className="text-center">
-              <h3 className="text-xl font-bold mb-2">{block.content.title}</h3>
-              <div className="text-4xl font-bold text-primary mb-4">{block.content.price}</div>
-              <div className="space-y-2 mb-6">
-                {block.content.features.map((feature: string, index: number) => (
-                  <div key={index} className="flex items-center justify-center">
-                    <Star className="w-4 h-4 text-yellow-500 mr-2" />
-                    {feature}
-                  </div>
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+                {block.content.heading}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {block.content.features?.map((feature: any, index: number) => (
+                  <Card key={index} className="text-center">
+                    <CardContent className="pt-6">
+                      <div className="flex justify-center mb-4">
+                        {renderIcon(feature.icon, "w-12 h-12 text-blue-600")}
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                      <p className="text-gray-600">{feature.description}</p>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
-              <Button variant="gradient" className="w-full">
-                Purchase Now
-              </Button>
             </div>
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
+          </section>
         );
 
-      case 'grid':
+      case 'testimonials':
         return (
-          <div 
-            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <h2 className="text-2xl font-bold mb-6 text-center">{block.content.title}</h2>
-            <div className={`grid gap-6 ${
-              block.content.columns === 2 ? 'grid-cols-2' : 
-              block.content.columns === 3 ? 'grid-cols-3' : 
-              'grid-cols-4'
-            }`}>
-              {block.content.items.map((item: any, index: number) => (
-                <div key={index} className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="text-3xl mb-3">{item.icon}</div>
-                  <h3 className="font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
-                </div>
-              ))}
-            </div>
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
-        );
-
-      case 'table':
-        return (
-          <div 
-            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <h2 className="text-2xl font-bold mb-6 text-center">{block.content.title}</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-muted">
-                <thead>
-                  <tr className="bg-muted/50">
-                    {block.content.headers.map((header: string, index: number) => (
-                      <th key={index} className="border border-muted p-3 text-left font-semibold">
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {block.content.rows.map((row: string[], rowIndex: number) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell: string, cellIndex: number) => (
-                        <td key={cellIndex} className="border border-muted p-3">
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
-        );
-
-      case 'list':
-        return (
-          <div 
-            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <h2 className="text-2xl font-bold mb-6">{block.content.title}</h2>
-            {block.content.style === 'numbered' ? (
-              <ol className="space-y-3">
-                {block.content.items.map((item: string, index: number) => (
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4 max-w-4xl">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8">
+                {block.content.heading}
+              </h2>
+              <ul className="space-y-4 text-lg">
+                {block.content.bulletPoints?.map((point: string, index: number) => (
                   <li key={index} className="flex items-start">
-                    <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">
-                      {index + 1}
-                    </span>
-                    <span className="text-muted-foreground">{item}</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <ul className="space-y-3">
-                {block.content.items.map((item: string, index: number) => (
-                  <li key={index} className="flex items-start">
-                    <Star className="w-4 h-4 text-primary mr-3 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">{item}</span>
+                    <Check className="w-6 h-6 text-green-600 mr-3 mt-1 flex-shrink-0" />
+                    {point}
                   </li>
                 ))}
               </ul>
-            )}
-            {isSelected && <BlockControls blockId={block.id} />}
-          </div>
+            </div>
+          </section>
         );
-      
+
+      case 'cta':
+        return (
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                    {block.content.heading}
+                  </h2>
+                  <p className="text-xl mb-8 opacity-90">
+                    {block.content.text}
+                  </p>
+                  <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100">
+                    {block.content.ctaText}
+                  </Button>
+                </div>
+                {block.content.hasImage && (
+                  <div className="bg-gray-200 h-80 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-600">{block.content.imageDescription || 'Image placeholder'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'bonuses':
+        return (
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
+                {block.content.heading}
+              </h2>
+              <p className="text-xl mb-12 text-center opacity-80">
+                {block.content.subtitle}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {block.content.bonuses?.map((bonus: any, index: number) => (
+                  <Card key={index} className="border-2 border-orange-200">
+                    <CardHeader className="text-center">
+                      <Badge className="mx-auto mb-2 bg-orange-500 text-white">
+                        {bonus.value}
+                      </Badge>
+                      <CardTitle className="text-lg">{bonus.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-center text-gray-600">{bonus.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'timeline':
+        return (
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4 max-w-4xl">
+              <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+                {block.content.heading}
+              </h2>
+              <div className="space-y-8">
+                {block.content.timelineItems?.map((item: any, index: number) => (
+                  <div key={index} className="flex items-start">
+                    <div className="bg-blue-600 text-white w-24 h-24 rounded-full flex items-center justify-center mr-6 flex-shrink-0">
+                      <span className="font-bold text-sm text-center">{item.phase}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'footer':
+        return (
+          <section className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                {block.content.heading}
+              </h2>
+              <p className="text-xl mb-8 opacity-90">
+                {block.content.text}
+              </p>
+              <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100">
+                {block.content.ctaText}
+              </Button>
+            </div>
+          </section>
+        );
+
       default:
         return (
-          <div 
-            className={`p-6 bg-muted/50 rounded-lg border-2 border-dashed border-muted cursor-pointer transition-all ${
-              isSelected ? 'ring-2 ring-primary' : ''
-            }`}
-            onClick={() => setSelectedBlock(block.id)}
-          >
-            <p className="text-center text-muted-foreground">
-              {block.type.charAt(0).toUpperCase() + block.type.slice(1)} Block
-            </p>
-            {isSelected && <BlockControls blockId={block.id} />}
+          <div className={baseClasses} key={block.id}>
+            <div className="container mx-auto px-4">
+              <p>Block type "{block.type}" not implemented yet</p>
+            </div>
           </div>
         );
     }
   };
 
-  const BlockControls = ({ blockId }: { blockId: string }) => {
-    const blockIndex = blocks.findIndex(b => b.id === blockId);
-    const isFirst = blockIndex === 0;
-    const isLast = blockIndex === blocks.length - 1;
+  const renderBlockEditor = (block: Block) => {
+    if (!block) return null;
 
     return (
-      <div className="absolute top-2 right-2 flex items-center space-x-1 bg-white rounded-md shadow-medium p-1">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={(e) => {
-            e.stopPropagation();
-            moveBlock(blockId, 'up');
-          }}
-          disabled={isFirst}
-        >
-          <ArrowUp className="w-3 h-3" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={(e) => {
-            e.stopPropagation();
-            moveBlock(blockId, 'down');
-          }}
-          disabled={isLast}
-        >
-          <ArrowDown className="w-3 h-3" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={(e) => {
-            e.stopPropagation();
-            duplicateBlock(blockId);
-          }}
-        >
-          <Copy className="w-3 h-3" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8 text-red-500 hover:text-red-600"
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteBlock(blockId);
-          }}
-        >
-          <Trash2 className="w-3 h-3" />
-        </Button>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Edit {block.type} Block</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedBlock(null)}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <Separator />
+
+        {/* Content Editor */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Content</h4>
+          
+          {block.type === 'hero' && (
+            <>
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={block.content.title || ''}
+                  onChange={(e) => updateBlock(block.id, { title: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Subtitle</Label>
+                <Textarea
+                  value={block.content.subtitle || ''}
+                  onChange={(e) => updateBlock(block.id, { subtitle: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>CTA Text</Label>
+                <Input
+                  value={block.content.ctaText || ''}
+                  onChange={(e) => updateBlock(block.id, { ctaText: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Form Title</Label>
+                <Input
+                  value={block.content.formTitle || ''}
+                  onChange={(e) => updateBlock(block.id, { formTitle: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'text' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Subheading</Label>
+                <Input
+                  value={block.content.subheading || ''}
+                  onChange={(e) => updateBlock(block.id, { subheading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Text Content</Label>
+                <Textarea
+                  value={block.content.text || ''}
+                  onChange={(e) => updateBlock(block.id, { text: e.target.value })}
+                  rows={6}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'cta' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Text</Label>
+                <Textarea
+                  value={block.content.text || ''}
+                  onChange={(e) => updateBlock(block.id, { text: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>CTA Text</Label>
+                <Input
+                  value={block.content.ctaText || ''}
+                  onChange={(e) => updateBlock(block.id, { ctaText: e.target.value })}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={block.content.hasImage}
+                  onCheckedChange={(checked) => updateBlock(block.id, { hasImage: checked })}
+                />
+                <Label>Include Image</Label>
+              </div>
+            </>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Settings Editor */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Settings</h4>
+          
+          <div>
+            <Label>Background Color</Label>
+            <Select
+              value={block.settings.backgroundColor}
+              onValueChange={(value) => updateBlockSettings(block.id, { backgroundColor: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bg-white">White</SelectItem>
+                <SelectItem value="bg-gray-50">Light Gray</SelectItem>
+                <SelectItem value="bg-slate-800">Dark</SelectItem>
+                <SelectItem value="bg-blue-50">Light Blue</SelectItem>
+                <SelectItem value="bg-orange-50">Light Orange</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Text Color</Label>
+            <Select
+              value={block.settings.textColor}
+              onValueChange={(value) => updateBlockSettings(block.id, { textColor: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text-gray-800">Dark</SelectItem>
+                <SelectItem value="text-white">White</SelectItem>
+                <SelectItem value="text-blue-800">Blue</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Alignment</Label>
+            <Select
+              value={block.settings.alignment}
+              onValueChange={(value: 'left' | 'center' | 'right') => updateBlockSettings(block.id, { alignment: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="center">Center</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <div className="bg-white border-b border-primary/10 shadow-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      <div className="border-b bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Page Builder</h1>
-              <p className="text-muted-foreground">Create beautiful landing pages for your courses</p>
+              <h1 className="text-2xl font-bold text-gray-900">Page Builder</h1>
+              <p className="text-sm text-gray-600">Create beautiful landing pages</p>
             </div>
-            <div className="flex items-center space-x-3">
-              {/* Device Preview Toggle */}
-              <div className="flex items-center bg-muted rounded-lg p-1">
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <Button
                   variant={viewMode === 'desktop' ? 'default' : 'ghost'}
                   size="sm"
@@ -536,15 +839,13 @@ export default function PageBuilder() {
               </div>
               
               <Button variant="outline" size="sm">
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 mr-2" />
                 Preview
               </Button>
-              <Button variant="secondary" size="sm">
-                <Save className="w-4 h-4" />
-                Save Draft
-              </Button>
-              <Button variant="gradient" size="sm">
-                Publish Page
+              
+              <Button size="sm">
+                <Save className="w-4 h-4 mr-2" />
+                Save
               </Button>
             </div>
           </div>
@@ -552,185 +853,185 @@ export default function PageBuilder() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-12 gap-8">
-          {/* Sidebar - Block Library */}
-          <div className="col-span-3">
-            <Card className="sticky top-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add Blocks
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-96">
-                  <div className="space-y-2">
-                    {blockTypes.map((blockType) => (
-                      <Button
-                        key={blockType.type}
-                        variant="outline"
-                        className="w-full justify-start"
-                        onClick={() => addBlock(blockType.type)}
-                      >
-                        <blockType.icon className="w-4 h-4 mr-2" />
-                        {blockType.label}
-                      </Button>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="builder">Builder</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
 
-          {/* Main Canvas */}
-          <div className="col-span-6">
-            <div className={`
-              mx-auto bg-white shadow-medium rounded-lg overflow-hidden transition-all duration-300
-              ${viewMode === 'mobile' ? 'max-w-sm' : viewMode === 'tablet' ? 'max-w-2xl' : 'max-w-4xl'}
-            `}>
-              {/* Page Header */}
-              <div className="bg-gradient-subtle p-4 border-b border-primary/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold">Course Landing Page</h3>
-                    <p className="text-sm text-muted-foreground">Last saved 2 minutes ago</p>
-                  </div>
-                  <Badge variant="secondary">Draft</Badge>
-                </div>
+          <TabsContent value="builder" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Sidebar */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Add Blocks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 gap-2">
+                      {blockTypes.map((blockType) => {
+                        const IconComponent = blockType.icon;
+                        return (
+                          <Button
+                            key={blockType.type}
+                            variant="ghost"
+                            className="justify-start h-auto p-3"
+                            onClick={() => addBlock(blockType.type)}
+                          >
+                            <IconComponent className="w-4 h-4 mr-2" />
+                            <div className="text-left">
+                              <div className="font-medium">{blockType.label}</div>
+                              <div className="text-xs text-gray-500">{blockType.description}</div>
+                            </div>
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Block List */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Page Structure</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-64">
+                      <div className="space-y-2">
+                        {blocks.map((block) => (
+                          <div
+                            key={block.id}
+                            className={`p-2 rounded border cursor-pointer transition-colors ${
+                              selectedBlock === block.id
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-white hover:bg-gray-50'
+                            }`}
+                            onClick={() => setSelectedBlock(block.id)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium capitalize">
+                                {block.type}
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    moveBlock(block.id, 'up');
+                                  }}
+                                >
+                                  <ArrowUp className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    moveBlock(block.id, 'down');
+                                  }}
+                                >
+                                  <ArrowDown className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    duplicateBlock(block.id);
+                                  }}
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteBlock(block.id);
+                                  }}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* Canvas Area */}
-              <div className="min-h-96">
-                {blocks.length === 0 ? (
-                  <div className="flex items-center justify-center h-96 text-center">
-                    <div>
-                      <Layout className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Start Building Your Page</h3>
-                      <p className="text-muted-foreground mb-4">Add blocks from the sidebar to create your landing page</p>
-                      <Button onClick={() => addBlock('hero')}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Hero Section
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6 p-6">
-                    {blocks.map((block) => (
-                      <div key={block.id} className="relative">
-                        {renderBlock(block)}
+              {/* Main Content */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Page Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className={`transition-all duration-300 ${getViewModeClass()}`}>
+                      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                        {blocks.map((block) => renderBlock(block))}
                       </div>
-                    ))}
-                    
-                    {/* Add Block Button */}
-                    <div className="flex items-center justify-center py-8">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="border-dashed border-2"
-                        onClick={() => addBlock('text')}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Block
-                      </Button>
                     </div>
-                  </div>
-                )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Properties Panel */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Properties</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedBlock ? (
+                      renderBlockEditor(blocks.find(b => b.id === selectedBlock)!)
+                    ) : (
+                      <p className="text-gray-500 text-center py-8">
+                        Select a block to edit its properties
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          </div>
+          </TabsContent>
 
-          {/* Properties Panel */}
-          <div className="col-span-3">
-            <Card className="sticky top-8">
+          <TabsContent value="preview" className="mt-6">
+            <div className={getViewModeClass()}>
+              <div className="bg-white rounded-lg overflow-hidden">
+                {blocks.map((block) => renderBlock(block))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="w-5 h-5 mr-2" />
-                  Properties
-                </CardTitle>
+                <CardTitle>Page Settings</CardTitle>
               </CardHeader>
-              <CardContent>
-                {selectedBlock ? (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Block Type</label>
-                      <Badge variant="secondary">
-                        {blocks.find(b => b.id === selectedBlock)?.type}
-                      </Badge>
-                    </div>
-                    
-                    {/* Dynamic form based on selected block */}
-                    {blocks.find(b => b.id === selectedBlock)?.type === 'hero' && (
-                      <>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Title</label>
-                          <Input 
-                            defaultValue={blocks.find(b => b.id === selectedBlock)?.content.title}
-                            placeholder="Enter title..."
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Subtitle</label>
-                          <Textarea 
-                            defaultValue={blocks.find(b => b.id === selectedBlock)?.content.subtitle}
-                            placeholder="Enter subtitle..."
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Button Text</label>
-                          <Input 
-                            defaultValue={blocks.find(b => b.id === selectedBlock)?.content.cta}
-                            placeholder="Button text..."
-                          />
-                        </div>
-                      </>
-                    )}
-                    
-                    {blocks.find(b => b.id === selectedBlock)?.type === 'text' && (
-                      <>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Heading</label>
-                          <Input 
-                            defaultValue={blocks.find(b => b.id === selectedBlock)?.content.heading}
-                            placeholder="Enter heading..."
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Content</label>
-                          <Textarea 
-                            defaultValue={blocks.find(b => b.id === selectedBlock)?.content.text}
-                            placeholder="Enter content..."
-                            className="min-h-24"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    <div className="pt-4 space-y-2">
-                      <Button variant="gradient" size="sm" className="w-full">
-                        Update Block
-                      </Button>
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
-                      </Button>
-                      <Button variant="ghost" size="sm" className="w-full text-red-500 hover:text-red-600">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete Block
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Settings className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-sm text-muted-foreground">
-                      Select a block to edit its properties
-                    </p>
-                  </div>
-                )}
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Page Title</Label>
+                  <Input
+                    value={pageSettings.title}
+                    onChange={(e) => setPageSettings({ ...pageSettings, title: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Page Description</Label>
+                  <Textarea
+                    value={pageSettings.description}
+                    onChange={(e) => setPageSettings({ ...pageSettings, description: e.target.value })}
+                  />
+                </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
