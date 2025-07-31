@@ -25,12 +25,17 @@ import {
   Move,
   Settings,
   Copy,
-  Trash2
+  Trash2,
+  Grid,
+  Table,
+  List,
+  ArrowUp,
+  ArrowDown
 } from "lucide-react";
 
 interface Block {
   id: string;
-  type: 'hero' | 'text' | 'image' | 'video' | 'pricing' | 'testimonial' | 'cta';
+  type: 'hero' | 'text' | 'image' | 'video' | 'pricing' | 'testimonial' | 'cta' | 'grid' | 'table' | 'list';
   content: any;
 }
 
@@ -138,7 +143,10 @@ export default function PageBuilder() {
     { type: 'video', icon: Video, label: 'Video' },
     { type: 'pricing', icon: CreditCard, label: 'Pricing' },
     { type: 'testimonial', icon: Quote, label: 'Testimonial' },
-    { type: 'cta', icon: Star, label: 'Call to Action' }
+    { type: 'cta', icon: Star, label: 'Call to Action' },
+    { type: 'grid', icon: Grid, label: 'Grid Layout' },
+    { type: 'table', icon: Table, label: 'Table' },
+    { type: 'list', icon: List, label: 'List' }
   ];
 
   const addBlock = (type: string) => {
@@ -148,6 +156,41 @@ export default function PageBuilder() {
       content: getDefaultContent(type)
     };
     setBlocks([...blocks, newBlock]);
+  };
+
+  const moveBlock = (blockId: string, direction: 'up' | 'down') => {
+    const blockIndex = blocks.findIndex(b => b.id === blockId);
+    if (blockIndex === -1) return;
+    
+    const newBlocks = [...blocks];
+    if (direction === 'up' && blockIndex > 0) {
+      [newBlocks[blockIndex], newBlocks[blockIndex - 1]] = [newBlocks[blockIndex - 1], newBlocks[blockIndex]];
+    } else if (direction === 'down' && blockIndex < blocks.length - 1) {
+      [newBlocks[blockIndex], newBlocks[blockIndex + 1]] = [newBlocks[blockIndex + 1], newBlocks[blockIndex]];
+    }
+    setBlocks(newBlocks);
+  };
+
+  const duplicateBlock = (blockId: string) => {
+    const blockToDuplicate = blocks.find(b => b.id === blockId);
+    if (!blockToDuplicate) return;
+    
+    const newBlock: Block = {
+      ...blockToDuplicate,
+      id: Date.now().toString()
+    };
+    
+    const blockIndex = blocks.findIndex(b => b.id === blockId);
+    const newBlocks = [...blocks];
+    newBlocks.splice(blockIndex + 1, 0, newBlock);
+    setBlocks(newBlocks);
+  };
+
+  const deleteBlock = (blockId: string) => {
+    setBlocks(blocks.filter(b => b.id !== blockId));
+    if (selectedBlock === blockId) {
+      setSelectedBlock(null);
+    }
   };
 
   const getDefaultContent = (type: string) => {
@@ -186,6 +229,34 @@ export default function PageBuilder() {
         heading: 'Ready to Get Started?',
         text: 'Join thousands of successful students',
         button: 'Enroll Today'
+      },
+      grid: {
+        title: 'Features Grid',
+        columns: 3,
+        items: [
+          { title: 'Feature 1', description: 'Description of feature 1', icon: '🚀' },
+          { title: 'Feature 2', description: 'Description of feature 2', icon: '💡' },
+          { title: 'Feature 3', description: 'Description of feature 3', icon: '⭐' }
+        ]
+      },
+      table: {
+        title: 'Comparison Table',
+        headers: ['Feature', 'Basic', 'Premium'],
+        rows: [
+          ['Support', 'Email', '24/7 Chat'],
+          ['Users', '1 User', 'Unlimited'],
+          ['Storage', '1GB', '100GB']
+        ]
+      },
+      list: {
+        title: 'What You\'ll Get',
+        items: [
+          'Comprehensive video tutorials',
+          'Downloadable resources',
+          'Community access',
+          'Certificate of completion'
+        ],
+        style: 'numbered'
       }
     };
     return defaults[type] || {};
@@ -256,6 +327,103 @@ export default function PageBuilder() {
             {isSelected && <BlockControls blockId={block.id} />}
           </div>
         );
+
+      case 'grid':
+        return (
+          <div 
+            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
+              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
+            }`}
+            onClick={() => setSelectedBlock(block.id)}
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">{block.content.title}</h2>
+            <div className={`grid gap-6 ${
+              block.content.columns === 2 ? 'grid-cols-2' : 
+              block.content.columns === 3 ? 'grid-cols-3' : 
+              'grid-cols-4'
+            }`}>
+              {block.content.items.map((item: any, index: number) => (
+                <div key={index} className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <h3 className="font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </div>
+              ))}
+            </div>
+            {isSelected && <BlockControls blockId={block.id} />}
+          </div>
+        );
+
+      case 'table':
+        return (
+          <div 
+            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
+              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
+            }`}
+            onClick={() => setSelectedBlock(block.id)}
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">{block.content.title}</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-muted">
+                <thead>
+                  <tr className="bg-muted/50">
+                    {block.content.headers.map((header: string, index: number) => (
+                      <th key={index} className="border border-muted p-3 text-left font-semibold">
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.content.rows.map((row: string[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell: string, cellIndex: number) => (
+                        <td key={cellIndex} className="border border-muted p-3">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {isSelected && <BlockControls blockId={block.id} />}
+          </div>
+        );
+
+      case 'list':
+        return (
+          <div 
+            className={`p-6 bg-white rounded-lg cursor-pointer transition-all ${
+              isSelected ? 'ring-2 ring-primary shadow-medium' : 'hover:shadow-soft'
+            }`}
+            onClick={() => setSelectedBlock(block.id)}
+          >
+            <h2 className="text-2xl font-bold mb-6">{block.content.title}</h2>
+            {block.content.style === 'numbered' ? (
+              <ol className="space-y-3">
+                {block.content.items.map((item: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">
+                      {index + 1}
+                    </span>
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <ul className="space-y-3">
+                {block.content.items.map((item: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <Star className="w-4 h-4 text-primary mr-3 mt-1 flex-shrink-0" />
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {isSelected && <BlockControls blockId={block.id} />}
+          </div>
+        );
       
       default:
         return (
@@ -274,22 +442,62 @@ export default function PageBuilder() {
     }
   };
 
-  const BlockControls = ({ blockId }: { blockId: string }) => (
-    <div className="absolute top-2 right-2 flex items-center space-x-1 bg-white rounded-md shadow-medium p-1">
-      <Button variant="ghost" size="icon" className="h-8 w-8">
-        <Move className="w-3 h-3" />
-      </Button>
-      <Button variant="ghost" size="icon" className="h-8 w-8">
-        <Copy className="w-3 h-3" />
-      </Button>
-      <Button variant="ghost" size="icon" className="h-8 w-8">
-        <Settings className="w-3 h-3" />
-      </Button>
-      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600">
-        <Trash2 className="w-3 h-3" />
-      </Button>
-    </div>
-  );
+  const BlockControls = ({ blockId }: { blockId: string }) => {
+    const blockIndex = blocks.findIndex(b => b.id === blockId);
+    const isFirst = blockIndex === 0;
+    const isLast = blockIndex === blocks.length - 1;
+
+    return (
+      <div className="absolute top-2 right-2 flex items-center space-x-1 bg-white rounded-md shadow-medium p-1">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            moveBlock(blockId, 'up');
+          }}
+          disabled={isFirst}
+        >
+          <ArrowUp className="w-3 h-3" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            moveBlock(blockId, 'down');
+          }}
+          disabled={isLast}
+        >
+          <ArrowDown className="w-3 h-3" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            duplicateBlock(blockId);
+          }}
+        >
+          <Copy className="w-3 h-3" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 text-red-500 hover:text-red-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteBlock(blockId);
+          }}
+        >
+          <Trash2 className="w-3 h-3" />
+        </Button>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-muted/30">
