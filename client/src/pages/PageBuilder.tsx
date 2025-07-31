@@ -337,6 +337,40 @@ export default function PageBuilder() {
           text: 'Join us today and start your journey.',
           ctaText: 'Get Started'
         };
+      case 'form':
+        return {
+          title: 'Contact Us',
+          description: 'Fill out the form below and we\'ll get back to you.',
+          submitText: 'Submit'
+        };
+      case 'image':
+        return {
+          imageUrl: '',
+          altText: 'Image description',
+          caption: 'Image caption'
+        };
+      case 'video':
+        return {
+          videoUrl: '',
+          title: 'Video Title',
+          description: 'Video description'
+        };
+      case 'pricing':
+        return {
+          heading: 'Choose Your Plan',
+          plans: [
+            {
+              name: 'Basic',
+              price: '$29/month',
+              features: ['Feature 1', 'Feature 2', 'Feature 3']
+            },
+            {
+              name: 'Pro',
+              price: '$59/month',
+              features: ['All Basic features', 'Feature 4', 'Feature 5']
+            }
+          ]
+        };
       default:
         return {};
     }
@@ -652,6 +686,125 @@ export default function PageBuilder() {
           </section>
         );
 
+      case 'form':
+        return (
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
+            <div className="container mx-auto px-4 max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
+                {block.content.title}
+              </h2>
+              {block.content.description && (
+                <p className="text-lg mb-8 text-center opacity-80">
+                  {block.content.description}
+                </p>
+              )}
+              <form className="space-y-4">
+                <Input placeholder="Name" />
+                <Input placeholder="Email" />
+                <Textarea placeholder="Message" rows={4} />
+                <Button className="w-full">
+                  {block.content.submitText}
+                </Button>
+              </form>
+            </div>
+          </section>
+        );
+
+      case 'image':
+        return (
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
+            <div className="container mx-auto px-4">
+              <div className="text-center">
+                {block.content.imageUrl ? (
+                  <img
+                    src={block.content.imageUrl}
+                    alt={block.content.altText}
+                    className="mx-auto max-w-full h-auto rounded-lg"
+                  />
+                ) : (
+                  <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-600">Image placeholder</span>
+                  </div>
+                )}
+                {block.content.caption && (
+                  <p className="mt-4 text-sm opacity-70">{block.content.caption}</p>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'video':
+        return (
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
+            <div className="container mx-auto px-4 max-w-4xl">
+              <div className="text-center">
+                {block.content.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                    {block.content.title}
+                  </h2>
+                )}
+                <div className="bg-gray-200 h-64 md:h-96 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-gray-600">
+                    {block.content.videoUrl ? 'Video Player' : 'Video placeholder'}
+                  </span>
+                </div>
+                {block.content.description && (
+                  <p className="text-lg opacity-80">{block.content.description}</p>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'pricing':
+        return (
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+                {block.content.heading}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {block.content.plans?.map((plan: any, index: number) => (
+                  <Card key={index} className="text-center">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                      <div className="text-3xl font-bold text-blue-600">{plan.price}</div>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2 mb-6">
+                        {plan.features?.map((feature: string, i: number) => (
+                          <li key={i} className="flex items-center">
+                            <Check className="w-4 h-4 text-green-600 mr-2" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                      <Button className="w-full">Choose Plan</Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
       default:
         return (
           <div 
@@ -674,13 +827,23 @@ export default function PageBuilder() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Edit {block.type} Block</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedBlock(null)}
-          >
-            <X className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => deleteBlock(block.id)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedBlock(null)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         <Separator />
@@ -718,6 +881,75 @@ export default function PageBuilder() {
                   value={block.content.formTitle || ''}
                   onChange={(e) => updateBlock(block.id, { formTitle: e.target.value })}
                 />
+              </div>
+              <div>
+                <Label>Form Fields</Label>
+                {block.content.formFields?.map((field: any, index: number) => (
+                  <div key={index} className="border p-3 mb-2 rounded">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <Label className="text-xs">Label</Label>
+                        <Input
+                          value={field.label}
+                          onChange={(e) => {
+                            const newFields = [...block.content.formFields];
+                            newFields[index] = { ...field, label: e.target.value };
+                            updateBlock(block.id, { formFields: newFields });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Placeholder</Label>
+                        <Input
+                          value={field.placeholder}
+                          onChange={(e) => {
+                            const newFields = [...block.content.formFields];
+                            newFields[index] = { ...field, placeholder: e.target.value };
+                            updateBlock(block.id, { formFields: newFields });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={field.required}
+                          onCheckedChange={(checked) => {
+                            const newFields = [...block.content.formFields];
+                            newFields[index] = { ...field, required: checked };
+                            updateBlock(block.id, { formFields: newFields });
+                          }}
+                        />
+                        <Label className="text-xs">Required</Label>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newFields = block.content.formFields.filter((_: any, i: number) => i !== index);
+                          updateBlock(block.id, { formFields: newFields });
+                        }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newFields = [...(block.content.formFields || []), {
+                      label: 'New Field',
+                      placeholder: 'Enter value',
+                      required: false
+                    }];
+                    updateBlock(block.id, { formFields: newFields });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Field
+                </Button>
               </div>
             </>
           )}
@@ -778,6 +1010,506 @@ export default function PageBuilder() {
                   onCheckedChange={(checked) => updateBlock(block.id, { hasImage: checked })}
                 />
                 <Label>Include Image</Label>
+              </div>
+            </>
+          )}
+
+          {block.type === 'features' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Features</Label>
+                {block.content.features?.map((feature: any, index: number) => (
+                  <div key={index} className="border p-3 mb-2 rounded">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <Label className="text-xs">Icon</Label>
+                        <Select
+                          value={feature.icon}
+                          onValueChange={(value) => {
+                            const newFeatures = [...block.content.features];
+                            newFeatures[index] = { ...feature, icon: value };
+                            updateBlock(block.id, { features: newFeatures });
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="check">Check</SelectItem>
+                            <SelectItem value="star">Star</SelectItem>
+                            <SelectItem value="target">Target</SelectItem>
+                            <SelectItem value="users">Users</SelectItem>
+                            <SelectItem value="trophy">Trophy</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Title</Label>
+                        <Input
+                          value={feature.title}
+                          onChange={(e) => {
+                            const newFeatures = [...block.content.features];
+                            newFeatures[index] = { ...feature, title: e.target.value };
+                            updateBlock(block.id, { features: newFeatures });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Description</Label>
+                      <Textarea
+                        value={feature.description}
+                        rows={2}
+                        onChange={(e) => {
+                          const newFeatures = [...block.content.features];
+                          newFeatures[index] = { ...feature, description: e.target.value };
+                          updateBlock(block.id, { features: newFeatures });
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        const newFeatures = block.content.features.filter((_: any, i: number) => i !== index);
+                        updateBlock(block.id, { features: newFeatures });
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newFeatures = [...(block.content.features || []), {
+                      icon: 'check',
+                      title: 'New Feature',
+                      description: 'Feature description'
+                    }];
+                    updateBlock(block.id, { features: newFeatures });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Feature
+                </Button>
+              </div>
+            </>
+          )}
+
+          {block.type === 'testimonials' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Bullet Points</Label>
+                {block.content.bulletPoints?.map((point: string, index: number) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <Input
+                      value={point}
+                      onChange={(e) => {
+                        const newPoints = [...block.content.bulletPoints];
+                        newPoints[index] = e.target.value;
+                        updateBlock(block.id, { bulletPoints: newPoints });
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newPoints = block.content.bulletPoints.filter((_: string, i: number) => i !== index);
+                        updateBlock(block.id, { bulletPoints: newPoints });
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newPoints = [...(block.content.bulletPoints || []), 'New bullet point'];
+                    updateBlock(block.id, { bulletPoints: newPoints });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Point
+                </Button>
+              </div>
+            </>
+          )}
+
+          {block.type === 'bonuses' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Subtitle</Label>
+                <Input
+                  value={block.content.subtitle || ''}
+                  onChange={(e) => updateBlock(block.id, { subtitle: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Bonuses</Label>
+                {block.content.bonuses?.map((bonus: any, index: number) => (
+                  <div key={index} className="border p-3 mb-2 rounded">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <Label className="text-xs">Title</Label>
+                        <Input
+                          value={bonus.title}
+                          onChange={(e) => {
+                            const newBonuses = [...block.content.bonuses];
+                            newBonuses[index] = { ...bonus, title: e.target.value };
+                            updateBlock(block.id, { bonuses: newBonuses });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Value</Label>
+                        <Input
+                          value={bonus.value}
+                          onChange={(e) => {
+                            const newBonuses = [...block.content.bonuses];
+                            newBonuses[index] = { ...bonus, value: e.target.value };
+                            updateBlock(block.id, { bonuses: newBonuses });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Description</Label>
+                      <Textarea
+                        value={bonus.description}
+                        rows={2}
+                        onChange={(e) => {
+                          const newBonuses = [...block.content.bonuses];
+                          newBonuses[index] = { ...bonus, description: e.target.value };
+                          updateBlock(block.id, { bonuses: newBonuses });
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        const newBonuses = block.content.bonuses.filter((_: any, i: number) => i !== index);
+                        updateBlock(block.id, { bonuses: newBonuses });
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newBonuses = [...(block.content.bonuses || []), {
+                      title: 'New Bonus',
+                      value: '$100',
+                      description: 'Bonus description'
+                    }];
+                    updateBlock(block.id, { bonuses: newBonuses });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Bonus
+                </Button>
+              </div>
+            </>
+          )}
+
+          {block.type === 'timeline' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Timeline Items</Label>
+                {block.content.timelineItems?.map((item: any, index: number) => (
+                  <div key={index} className="border p-3 mb-2 rounded">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <Label className="text-xs">Phase</Label>
+                        <Input
+                          value={item.phase}
+                          onChange={(e) => {
+                            const newItems = [...block.content.timelineItems];
+                            newItems[index] = { ...item, phase: e.target.value };
+                            updateBlock(block.id, { timelineItems: newItems });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Title</Label>
+                        <Input
+                          value={item.title}
+                          onChange={(e) => {
+                            const newItems = [...block.content.timelineItems];
+                            newItems[index] = { ...item, title: e.target.value };
+                            updateBlock(block.id, { timelineItems: newItems });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Description</Label>
+                      <Textarea
+                        value={item.description}
+                        rows={2}
+                        onChange={(e) => {
+                          const newItems = [...block.content.timelineItems];
+                          newItems[index] = { ...item, description: e.target.value };
+                          updateBlock(block.id, { timelineItems: newItems });
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        const newItems = block.content.timelineItems.filter((_: any, i: number) => i !== index);
+                        updateBlock(block.id, { timelineItems: newItems });
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newItems = [...(block.content.timelineItems || []), {
+                      phase: 'Step ' + ((block.content.timelineItems?.length || 0) + 1),
+                      title: 'New Phase',
+                      description: 'Phase description'
+                    }];
+                    updateBlock(block.id, { timelineItems: newItems });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Phase
+                </Button>
+              </div>
+            </>
+          )}
+
+          {block.type === 'footer' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Text</Label>
+                <Textarea
+                  value={block.content.text || ''}
+                  onChange={(e) => updateBlock(block.id, { text: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>CTA Text</Label>
+                <Input
+                  value={block.content.ctaText || ''}
+                  onChange={(e) => updateBlock(block.id, { ctaText: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'form' && (
+            <>
+              <div>
+                <Label>Form Title</Label>
+                <Input
+                  value={block.content.title || ''}
+                  onChange={(e) => updateBlock(block.id, { title: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Form Description</Label>
+                <Textarea
+                  value={block.content.description || ''}
+                  onChange={(e) => updateBlock(block.id, { description: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Submit Button Text</Label>
+                <Input
+                  value={block.content.submitText || 'Submit'}
+                  onChange={(e) => updateBlock(block.id, { submitText: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'image' && (
+            <>
+              <div>
+                <Label>Image URL</Label>
+                <Input
+                  value={block.content.imageUrl || ''}
+                  onChange={(e) => updateBlock(block.id, { imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <Label>Alt Text</Label>
+                <Input
+                  value={block.content.altText || ''}
+                  onChange={(e) => updateBlock(block.id, { altText: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Caption</Label>
+                <Input
+                  value={block.content.caption || ''}
+                  onChange={(e) => updateBlock(block.id, { caption: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'video' && (
+            <>
+              <div>
+                <Label>Video URL</Label>
+                <Input
+                  value={block.content.videoUrl || ''}
+                  onChange={(e) => updateBlock(block.id, { videoUrl: e.target.value })}
+                  placeholder="https://youtube.com/watch?v=..."
+                />
+              </div>
+              <div>
+                <Label>Video Title</Label>
+                <Input
+                  value={block.content.title || ''}
+                  onChange={(e) => updateBlock(block.id, { title: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={block.content.description || ''}
+                  onChange={(e) => updateBlock(block.id, { description: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          {block.type === 'pricing' && (
+            <>
+              <div>
+                <Label>Section Heading</Label>
+                <Input
+                  value={block.content.heading || ''}
+                  onChange={(e) => updateBlock(block.id, { heading: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Pricing Plans</Label>
+                {block.content.plans?.map((plan: any, index: number) => (
+                  <div key={index} className="border p-3 mb-2 rounded">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <Label className="text-xs">Plan Name</Label>
+                        <Input
+                          value={plan.name}
+                          onChange={(e) => {
+                            const newPlans = [...block.content.plans];
+                            newPlans[index] = { ...plan, name: e.target.value };
+                            updateBlock(block.id, { plans: newPlans });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Price</Label>
+                        <Input
+                          value={plan.price}
+                          onChange={(e) => {
+                            const newPlans = [...block.content.plans];
+                            newPlans[index] = { ...plan, price: e.target.value };
+                            updateBlock(block.id, { plans: newPlans });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Features (one per line)</Label>
+                      <Textarea
+                        value={plan.features?.join('\n') || ''}
+                        rows={3}
+                        onChange={(e) => {
+                          const newPlans = [...block.content.plans];
+                          newPlans[index] = { ...plan, features: e.target.value.split('\n').filter(f => f.trim()) };
+                          updateBlock(block.id, { plans: newPlans });
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        const newPlans = block.content.plans.filter((_: any, i: number) => i !== index);
+                        updateBlock(block.id, { plans: newPlans });
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Remove Plan
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newPlans = [...(block.content.plans || []), {
+                      name: 'New Plan',
+                      price: '$99',
+                      features: ['Feature 1', 'Feature 2', 'Feature 3']
+                    }];
+                    updateBlock(block.id, { plans: newPlans });
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Plan
+                </Button>
               </div>
             </>
           )}
