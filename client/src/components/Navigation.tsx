@@ -1,11 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Store, FileText, Home } from "lucide-react";
 
 export const Navigation = () => {
-  const location = useLocation();
+  const [location] = useLocation();
   
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location === path;
   
   return (
     <nav className="bg-white border-b border-primary/10 shadow-soft sticky top-0 z-50">

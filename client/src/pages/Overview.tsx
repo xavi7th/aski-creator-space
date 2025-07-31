@@ -14,7 +14,7 @@ import {
   Layout,
   Share2
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 
 export default function Overview() {
   return (

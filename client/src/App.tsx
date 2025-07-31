@@ -1,30 +1,27 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Router, Route } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 import { Navigation } from "@/components/Navigation";
 import Overview from "./pages/Overview";
 import CreatorStorefront from "./pages/CreatorStorefront";
 import PageBuilder from "./pages/PageBuilder";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <Router>
         <Navigation />
-        <Routes>
-          <Route path="/" element={<Overview />} />
-          <Route path="/creator-storefront" element={<CreatorStorefront />} />
-          <Route path="/page-builder" element={<PageBuilder />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+        <Route path="/" component={Overview} />
+        <Route path="/creator-storefront" component={CreatorStorefront} />
+        <Route path="/page-builder" component={PageBuilder} />
+        <Route path="*" component={NotFound} />
+      </Router>
     </TooltipProvider>
   </QueryClientProvider>
 );
