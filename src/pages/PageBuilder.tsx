@@ -43,18 +43,90 @@ export default function PageBuilder() {
       id: '1',
       type: 'hero',
       content: {
-        title: 'Master Digital Marketing in 30 Days',
-        subtitle: 'Transform your business with proven strategies',
+        title: 'BOOKED WITHOUT BOUNDARIES',
+        subtitle: 'Master the art of client acquisition - join top coaches who have transformed their business. Take the leap into confidence.',
         image: 'bg-gradient-primary',
-        cta: 'Get Started Today'
+        cta: 'Register Now',
+        hasForm: true,
+        formFields: ['Full Name', 'Best Email', 'Phone Number']
       }
     },
     {
-      id: '2',
+      id: '2', 
       type: 'text',
       content: {
-        heading: 'What You\'ll Learn',
-        text: 'This comprehensive course covers everything from social media marketing to email automation.'
+        heading: 'You started off with one dream in mind:',
+        text: 'To create something from your soul work as a coach that connects Heart to Heart.\n\nYou told yourself once this takes off - I hope that it is a skill you can identify with in this field.\n\nYou jumped yourself in the stage - then fact is a skill you can identify with in this stage.\n\nYou feel yourself it bit you can practice and gain practice and be experience and experience that fits yourself to be yourself to take yourself to experience that fits.\n\nYou looked around a bit practice and bit and some experience or mindfulness so you ended up not going yourself to business confidence.\n\nYou focused a long as yourself which helped and confident.\n\nYou feel isolated and a bit part of a different direction you will not be able to take as much practice as you want that you are already behind.',
+        centered: true
+      }
+    },
+    {
+      id: '3',
+      type: 'text', 
+      content: {
+        heading: 'We are here to support you on every stage of the journey',
+        text: 'Our community includes thousands of coaches, consultants, and heart-centered entrepreneurs who have built six and seven figure businesses with authentic connection.\\n\\nThe 30 Day Challenge\\n\\nWe will provide you with the daily tools and resources you need to build your ideal client attraction system - and accountability to stick with it for 30 days.\\n\\nPartnership Program\\n\\nJoin our exclusive directory where we connect and support motivated coaches. Starting your online presence and build social authority.\\n\\nNurture Sales\\n\\nRun your online business like it is any real. Starting your social presence and build social authority.',
+        features: [
+          'Daily tools and resources',
+          'Accountability system', 
+          'Exclusive directory access',
+          'Community support'
+        ]
+      }
+    },
+    {
+      id: '4',
+      type: 'text',
+      content: {
+        heading: 'In this conference, you will learn:',
+        text: '',
+        bulletPoints: [
+          'How to consistently attract ideal clients',
+          'The psychology behind client decisions', 
+          'Building authentic relationships that convert',
+          'Systems for sustainable business growth'
+        ]
+      }
+    },
+    {
+      id: '5',
+      type: 'text',
+      content: {
+        heading: 'Join Expert Instructors',
+        text: 'Get ready to be in close company with our industry pros and see the transformational journey of our community members as they turn their stories into million-dollar businesses.',
+        hasImage: true,
+        imageUrl: '/lovable-uploads/0795ffc0-38d0-4894-a840-0ee84615459c.png'
+      }
+    },
+    {
+      id: '6', 
+      type: 'text',
+      content: {
+        heading: 'Imagine what your life could be like in the next 100 days',
+        text: 'Picture yourself confident in your abilities, with a clear path forward and the support you need to succeed.',
+        bulletPoints: [
+          'Consistent client bookings',
+          'Clear business strategy',
+          'Supportive community'
+        ]
+      }
+    },
+    {
+      id: '7',
+      type: 'text',
+      content: {
+        heading: '🎁 AMAZING GIFTS FOR YOU',
+        text: 'When you join today, you will get exclusive bonuses that alone are worth more than the full program investment.',
+        hasHighlight: true
+      }
+    },
+    {
+      id: '8',
+      type: 'cta',
+      content: {
+        heading: '2025 is not over yet! Let us make it count.',
+        text: 'Join the transformation today',
+        button: 'Start Your Journey'
       }
     }
   ]);
