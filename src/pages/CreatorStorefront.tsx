@@ -185,160 +185,293 @@ export default function CreatorStorefront() {
 
           {/* Preview Tab */}
           <TabsContent value="preview" className="space-y-8">
-            {/* Hero Section */}
-            <Card className="overflow-hidden shadow-medium">
-              <div className="relative h-48 bg-gradient-primary">
-                <div className="absolute inset-0 bg-black/20"></div>
+            {/* Hero Section - Professional Design */}
+            <div className="relative overflow-hidden">
+              {/* Cover Image with Sophisticated Gradient */}
+              <div className="relative h-80 bg-gradient-to-br from-primary via-primary/90 to-primary/70">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_50%)]"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,0,0,0.1),transparent_30%,rgba(255,255,255,0.05))]"></div>
+                
+                {/* Elegant Pattern Overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="h-full w-full bg-[radial-gradient(circle_at_25%_25%,white_2px,transparent_2px)] bg-[length:60px_60px]"></div>
+                </div>
+                
                 {isEditing && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white"
+                    className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm border border-white/20"
                   >
-                    <Upload className="w-4 h-4" />
+                    <Upload className="w-4 h-4 mr-2" />
+                    Change Cover
                   </Button>
                 )}
               </div>
-              <CardContent className="pt-6">
-                <div className="flex items-start space-x-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-full bg-gradient-secondary shadow-medium -mt-12 border-4 border-white"></div>
-                    {isEditing && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute -bottom-2 -right-2 h-8 w-8 bg-white shadow-soft"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-foreground">{storeData.profile.name}</h2>
-                        <p className="text-muted-foreground">{storeData.profile.tagline}</p>
-                        <div className="flex items-center space-x-4 mt-2">
-                          {storeData.settings.showStudentCount && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Users className="w-4 h-4 mr-1" />
-                              {storeData.profile.students} students
+
+              {/* Main Content Card with Sophisticated Layout */}
+              <div className="relative -mt-32 mx-6">
+                <Card className="backdrop-blur-sm bg-white/95 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.1)] border-0">
+                  <CardContent className="p-0">
+                    {/* Profile Section */}
+                    <div className="p-8 pb-6">
+                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                        {/* Avatar with Premium Styling */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-[0_8px_30px_rgba(0,0,0,0.12)] ring-4 ring-white/50">
+                            <div className="w-full h-full rounded-2xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                              <User className="w-16 h-16 text-white/60" />
                             </div>
+                          </div>
+                          {isEditing && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute -bottom-2 -right-2 h-10 w-10 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:bg-gray-50 rounded-xl border border-gray-100"
+                            >
+                              <Edit3 className="w-4 h-4 text-gray-600" />
+                            </Button>
                           )}
-                          {storeData.settings.showRatings && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Star className="w-4 h-4 mr-1 text-yellow-500" />
-                              {storeData.profile.rating} rating
+                        </div>
+                        
+                        {/* Profile Info with Premium Typography */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                            <div className="space-y-3">
+                              <div>
+                                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                                  {storeData.profile.name}
+                                </h1>
+                                <p className="text-xl text-primary/80 font-medium mt-1">
+                                  {storeData.profile.tagline}
+                                </p>
+                              </div>
+                              
+                              {/* Premium Stats Row */}
+                              <div className="flex flex-wrap items-center gap-6 mt-4">
+                                {storeData.settings.showStudentCount && (
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl">
+                                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                      <Users className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <div>
+                                      <p className="text-lg font-bold text-gray-900">{storeData.profile.students}</p>
+                                      <p className="text-xs text-gray-500 -mt-1">Students</p>
+                                    </div>
+                                  </div>
+                                )}
+                                {storeData.settings.showRatings && (
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl">
+                                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                                      <Star className="w-4 h-4 text-amber-600 fill-amber-600" />
+                                    </div>
+                                    <div>
+                                      <p className="text-lg font-bold text-gray-900">{storeData.profile.rating}</p>
+                                      <p className="text-xs text-gray-500 -mt-1">Rating</p>
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-xl">
+                                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <BookOpen className="w-4 h-4 text-blue-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-lg font-bold text-gray-900">{storeData.profile.courses}</p>
+                                    <p className="text-xs text-gray-500 -mt-1">Courses</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          )}
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <BookOpen className="w-4 h-4 mr-1" />
-                            {storeData.profile.courses} courses
+                            
+                            {isEditing && (
+                              <Button variant="outline" size="lg" className="flex-shrink-0">
+                                <Edit3 className="w-4 h-4 mr-2" />
+                                Edit Profile
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
-                      {isEditing && (
-                        <Button variant="outline" size="sm">
-                          <Edit3 className="w-4 h-4" />
-                          Edit Profile
-                        </Button>
-                      )}
+                      
+                      {/* Bio with Premium Typography */}
+                      <div className="mt-8 pt-6 border-t border-gray-100">
+                        <p className="text-lg text-gray-700 leading-relaxed max-w-4xl">
+                          {storeData.profile.bio}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6">
-                  <p className="text-foreground leading-relaxed">
-                    {storeData.profile.bio}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
 
-            {/* Featured Courses Grid */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-foreground">Featured Courses</h3>
+            {/* Featured Courses Grid - Premium Design */}
+            <div className="space-y-8 mt-16">
+              <div className="text-center max-w-3xl mx-auto">
+                <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                  Featured Courses
+                </h2>
+                <p className="text-xl text-gray-600 leading-relaxed">
+                  Carefully crafted learning experiences designed to accelerate your growth
+                </p>
                 {isEditing && (
-                  <Button variant="outline" size="sm">
-                    <Settings className="w-4 h-4" />
+                  <Button variant="outline" size="lg" className="mt-4">
+                    <Settings className="w-4 h-4 mr-2" />
                     Manage Courses
                   </Button>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {[
                   {
                     title: "Complete Digital Marketing Mastery",
                     type: "Course",
                     icon: BookOpen,
                     price: "$197",
+                    originalPrice: "$297",
                     students: "2,341",
                     rating: "4.9",
-                    image: "bg-primary"
+                    lessons: "24",
+                    duration: "8 hours",
+                    description: "Master the fundamentals of digital marketing with hands-on projects and real-world case studies.",
+                    tags: ["Beginner", "Certificate", "Lifetime Access"]
                   },
                   {
                     title: "Social Media Strategy Workshop",
                     type: "Live Training",
                     icon: Calendar,
                     price: "$97",
+                    originalPrice: "$147",
                     students: "856",
                     rating: "4.8",
-                    image: "bg-secondary"
+                    lessons: "Live",
+                    duration: "3 hours",
+                    description: "Join our interactive workshop to build winning social media strategies that convert.",
+                    tags: ["Intermediate", "Live", "Q&A Session"]
                   },
                   {
                     title: "Email Marketing Automation",
                     type: "Video Series",
                     icon: Video,
                     price: "$67",
+                    originalPrice: "$97",
                     students: "1,234",
                     rating: "4.9",
-                    image: "bg-accent"
+                    lessons: "12",
+                    duration: "4 hours",
+                    description: "Build automated email sequences that nurture leads and drive consistent sales.",
+                    tags: ["Advanced", "Templates", "Practical"]
                   }
                 ].map((course, index) => (
-                  <Card key={index} className="group hover:shadow-medium transition-all duration-300">
-                    <div className={`h-48 ${course.image} relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
-                      <Badge 
-                        variant="secondary" 
-                        className="absolute top-4 left-4 bg-white text-foreground"
-                      >
-                        <course.icon className="w-3 h-3 mr-1" />
-                        {course.type}
-                      </Badge>
-                      {isEditing && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                      )}
+                  <Card key={index} className="group hover:shadow-[0_20px_70px_-10px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-2 border-0 bg-white">
+                    {/* Course Image */}
+                    <div className="relative h-56 overflow-hidden rounded-t-xl">
+                      <div className={`h-full bg-gradient-to-br ${
+                        index === 0 ? 'from-blue-500 to-blue-600' :
+                        index === 1 ? 'from-purple-500 to-purple-600' :
+                        'from-emerald-500 to-emerald-600'
+                      }`}>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_50%)]"></div>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
+                        
+                        {/* Floating Elements */}
+                        <div className="absolute top-6 left-6">
+                          <Badge className="bg-white/90 text-gray-900 hover:bg-white/90">
+                            <course.icon className="w-3 h-3 mr-1" />
+                            {course.type}
+                          </Badge>
+                        </div>
+                        
+                        {/* Rating Badge */}
+                        <div className="absolute top-6 right-6">
+                          <div className="bg-white/90 rounded-full px-3 py-1 flex items-center gap-1">
+                            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                            <span className="text-sm font-semibold text-gray-900">{course.rating}</span>
+                          </div>
+                        </div>
+
+                        {/* Course Stats */}
+                        <div className="absolute bottom-6 left-6 flex items-center gap-4">
+                          <div className="bg-white/90 rounded-lg px-3 py-1">
+                            <span className="text-sm font-semibold text-gray-900">{course.lessons} lessons</span>
+                          </div>
+                          <div className="bg-white/90 rounded-lg px-3 py-1">
+                            <span className="text-sm font-semibold text-gray-900">{course.duration}</span>
+                          </div>
+                        </div>
+
+                        {isEditing && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute bottom-6 right-6 bg-white/20 hover:bg-white/30 text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <CardHeader>
-                      <CardTitle className="text-lg">{course.title}</CardTitle>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center">
-                            <Users className="w-3 h-3 mr-1" />
-                            {course.students}
+
+                    {/* Course Content */}
+                    <div className="p-6">
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {course.tags.map((tag, tagIndex) => (
+                          <span 
+                            key={tagIndex}
+                            className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md font-medium"
+                          >
+                            {tag}
                           </span>
-                          <span className="flex items-center">
-                            <Star className="w-3 h-3 mr-1 text-yellow-500" />
-                            {course.rating}
+                        ))}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+                        {course.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-gray-600 mb-6 leading-relaxed">
+                        {course.description}
+                      </p>
+
+                      {/* Stats Row */}
+                      <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
+                        <div className="flex items-center gap-1 text-gray-500">
+                          <Users className="w-4 h-4" />
+                          <span className="text-sm font-medium">{course.students}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-500">
+                          <BookOpen className="w-4 h-4" />
+                          <span className="text-sm font-medium">{course.lessons} lessons</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-amber-500">
+                          <Star className="w-4 h-4 fill-amber-500" />
+                          <span className="text-sm font-bold text-gray-900">{course.rating}</span>
+                        </div>
+                      </div>
+
+                      {/* Pricing & CTA */}
+                      <div className="space-y-4">
+                        <div className="flex items-baseline gap-3">
+                          <span className="text-3xl font-bold text-gray-900">{course.price}</span>
+                          <span className="text-lg text-gray-400 line-through">{course.originalPrice}</span>
+                          <span className="bg-red-100 text-red-700 px-2 py-1 rounded-md text-xs font-bold">
+                            SAVE {Math.round((1 - parseInt(course.price.slice(1)) / parseInt(course.originalPrice.slice(1))) * 100)}%
                           </span>
                         </div>
-                        <span className="text-lg font-semibold text-primary">{course.price}</span>
+                        
+                        <Button 
+                          size="lg" 
+                          className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          Enroll Now
+                        </Button>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full" variant="default">
-                        <DollarSign className="w-4 h-4" />
-                        Purchase Now
-                      </Button>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
