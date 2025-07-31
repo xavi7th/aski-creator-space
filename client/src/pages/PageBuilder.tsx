@@ -411,11 +411,22 @@ export default function PageBuilder() {
     };
 
     const baseClasses = `${settings.backgroundColor} ${settings.textColor} ${settings.padding} ${alignmentClass[settings.alignment]}`;
+    const isSelected = selectedBlock === block.id;
+    const containerClasses = `relative transition-all duration-200 ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''} hover:ring-2 hover:ring-blue-300 hover:ring-opacity-30 cursor-pointer`;
+
+    const handleBlockClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setSelectedBlock(block.id);
+    };
 
     switch (block.type) {
       case 'hero':
         return (
-          <section className={`${baseClasses} relative`} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
@@ -453,7 +464,11 @@ export default function PageBuilder() {
 
       case 'text':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4 max-w-4xl">
               {block.content.heading && (
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -476,7 +491,11 @@ export default function PageBuilder() {
 
       case 'features':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4">
               <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
                 {block.content.heading}
@@ -500,7 +519,11 @@ export default function PageBuilder() {
 
       case 'testimonials':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4 max-w-4xl">
               <h2 className="text-3xl md:text-4xl font-bold mb-8">
                 {block.content.heading}
@@ -519,7 +542,11 @@ export default function PageBuilder() {
 
       case 'cta':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
@@ -545,7 +572,11 @@ export default function PageBuilder() {
 
       case 'bonuses':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
                 {block.content.heading}
@@ -574,7 +605,11 @@ export default function PageBuilder() {
 
       case 'timeline':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4 max-w-4xl">
               <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
                 {block.content.heading}
@@ -598,7 +633,11 @@ export default function PageBuilder() {
 
       case 'footer':
         return (
-          <section className={baseClasses} key={block.id}>
+          <section 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 {block.content.heading}
@@ -615,7 +654,11 @@ export default function PageBuilder() {
 
       default:
         return (
-          <div className={baseClasses} key={block.id}>
+          <div 
+            className={`${baseClasses} ${containerClasses}`} 
+            key={block.id}
+            onClick={handleBlockClick}
+          >
             <div className="container mx-auto px-4">
               <p>Block type "{block.type}" not implemented yet</p>
             </div>
@@ -877,7 +920,7 @@ export default function PageBuilder() {
                             key={blockType.type}
                             variant="ghost"
                             className="justify-start h-auto p-3"
-                            onClick={() => addBlock(blockType.type)}
+                            onClick={() => addBlock(blockType.type as Block['type'])}
                           >
                             <IconComponent className="w-4 h-4 mr-2" />
                             <div className="text-left">
